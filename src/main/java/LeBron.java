@@ -1,10 +1,10 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class LeBron {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Task[] list = new Task[100];
-        int counter = 0;
+        ArrayList<Task> list = new ArrayList<>();
 
         //Initial message
         String banner = "____________________________________________________________\n" +
@@ -22,32 +22,31 @@ public class LeBron {
                     System.out.println("    " + "Peace out fam!\n" + "____________________________________________________________");
                     break;
                 } else if(input.equals("list")){
-                    for (int i = 0; i < counter; i++){
-                        System.out.println("    " + (i+1) + ") " + list[i]);
+                    for (int i = 0; i < list.size(); i++){
+                        System.out.println("    " + (i+1) + ") " + list.get(i));
                     }
                     System.out.println("____________________________________________________________");
                 } else if(input.startsWith("mark ")){
                     int taskNumber = Integer.parseInt((input.split(" "))[1]);
                     int index = taskNumber - 1;
-                    list[index].setStatus(true);
-                    System.out.println("    " +  "Oh yea we're striving for greatness!\n" + list[index]);
+                    list.get(index).setStatus(true);
+                    System.out.println("    " +  "Oh yea we're striving for greatness!\n" + list.get(index));
                     System.out.println("____________________________________________________________");
                 } else if (input.startsWith("unmark ")){
                     int taskNumber = Integer.parseInt((input.split(" "))[1]);
                     int index = taskNumber - 1;
-                    list[index].setStatus(false);
-                    System.out.println("    " +  "Oh nah we undoing stuff now?\n" + list[index]);
+                    list.get(index).setStatus(false);
+                    System.out.println("    " +  "Oh nah we undoing stuff now?\n" + list.get(index));
                     System.out.println("____________________________________________________________");
                 } else if(input.equals("todo") || input.startsWith("todo ")){
                     String description = input.length() > 4 ? input.substring(5).trim() : "";
                     if (description.isEmpty()) {
                         throw new LeBronException("Whatchu need to do?");
                     }
-                    list[counter] = new Todo(description);
-                    counter++;
+                    list.add(new Todo(description));
                     System.out.println("    More todo!");
-                    System.out.println(list[counter-1]);
-                    System.out.println(counter + " tasks in your grind list now!");
+                    System.out.println("    " + list.get(list.size() - 1));
+                    System.out.println("    " + list.size() + " tasks in your grind list now!");
                     System.out.println("____________________________________________________________");
                 } else if(input.equals("deadline") || input.startsWith("deadline ")){
                     String fullDesc = input.length() > 8 ? input.substring(9).trim() : "";
@@ -58,13 +57,10 @@ public class LeBron {
                         throw new LeBronException("Do not test me kid, specify your due date!");
                     }
                     String[] parts = fullDesc.split(" by ");
-                    String description = parts[0];
-                    String by = parts[1];
-                    list[counter] = new Deadline(description, by);
-                    counter++;
+                    list.add(new Deadline(parts[0], parts[1]));
                     System.out.println("    " + "Deadlines forge kings!");
-                    System.out.println(list[counter-1]);
-                    System.out.println(counter + " tasks in your grind list now!");
+                    System.out.println("    " + list.get(list.size() - 1));
+                    System.out.println("    " + list.size() + " tasks in your grind list now!");
                     System.out.println("____________________________________________________________");
                 } else if(input.equals("event") || input.startsWith("event ")){
                     String fullDesc = input.length() > 5 ? input.substring(6).trim() : "";
@@ -75,14 +71,19 @@ public class LeBron {
                         throw new LeBronException("Please tell me when it starts and ends little one.");
                     }
                     String[] parts = fullDesc.split(" from | to ");
-                    String description = parts[0];
-                    String start = parts[1];
-                    String end = parts[2];
-                    list[counter] = new Event(description, start, end);
-                    counter++;
+                    list.add(new Event(parts[0], parts[1], parts[2]));
                     System.out.println("    " + "Event fit for a king!");
-                    System.out.println(list[counter-1]);
-                    System.out.println(counter + " tasks in your grind list now!");
+                    System.out.println("    " + list.get(list.size() - 1));
+                    System.out.println("    " + list.size() + " tasks in your grind list now!");
+                    System.out.println("____________________________________________________________");
+                } else if(input.startsWith("delete ")){
+                    int taskNumber = Integer.parseInt((input.split(" "))[1]);
+                    int index = taskNumber - 1;
+                    Task removed = list.get(index);
+                    list.remove(index);
+                    System.out.println("    Task been taken care of!");
+                    System.out.println("    " + removed);
+                    System.out.println("    " + list.size() + " tasks left kiddo.");
                     System.out.println("____________________________________________________________");
                 } else {
                     throw new LeBronException("Whatchu tryna do youngblood?");
@@ -93,11 +94,8 @@ public class LeBron {
             } catch (NumberFormatException e) {
                 System.out.println("    This task don't exist, don't piss me off.");
                 System.out.println("____________________________________________________________");
-            } catch (ArrayIndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 System.out.println("    This task don't exist, don't piss me off.");
-                System.out.println("____________________________________________________________");
-            } catch (NullPointerException e) {
-                System.out.println("    That stuff ain't there kid.");
                 System.out.println("____________________________________________________________");
             }
         }
