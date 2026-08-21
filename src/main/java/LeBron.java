@@ -39,6 +39,37 @@ public class LeBron {
                 list[index].setStatus(false);
                 System.out.println("    " +  "Oh nah we undoing stuff now?\n" + list[index]);
                 System.out.println("____________________________________________________________");
+            } else if(input.startsWith("todo")){
+                String description = input.substring(5);
+                list[counter] = new Todo(description);
+                counter++;
+                System.out.println("    More todo!");
+                System.out.println(list[counter-1]);
+                System.out.println(counter + " tasks in your grind list now!");
+                System.out.println("____________________________________________________________");
+            } else if(input.startsWith("deadline ")){
+                String fullDesc = input.substring(9);
+                String[] parts = fullDesc.split(" by ");
+                String description = parts[0];
+                String by = parts[1];
+                list[counter] = new Deadline(description, by);
+                counter++;
+                System.out.println("    " + "Deadlines forge kings!");
+                System.out.println(list[counter-1]);
+                System.out.println(counter + " tasks in your grind list now!");
+                System.out.println("____________________________________________________________");
+            } else if(input.startsWith("event ")){
+                String fullDesc = input.substring(6);
+                String[] parts = fullDesc.split(" from | to ");
+                String description = parts[0];
+                String start = parts[1];
+                String end = parts[2];
+                list[counter] = new Event(description, start, end);
+                counter++;
+                System.out.println("    " + "Event fit for a king!");
+                System.out.println(list[counter-1]);
+                System.out.println(counter + " tasks in your grind list now!");
+                System.out.println("____________________________________________________________");
             } else {
                 list[counter] = new Task(input);
                 counter++;
