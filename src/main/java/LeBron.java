@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -29,7 +30,14 @@ public class LeBron {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> list = new ArrayList<>();
+        Storage storage = new Storage();
+        TaskList taskList;
+        try {
+            taskList = storage.load();
+        } catch (IOException e) {
+            System.out.println("    Couldn't load your saved grind list, starting fresh.");
+            taskList = new TaskList(new ArrayList<>());
+        }
 
         //Initial message
         String banner = "____________________________________________________________\n" +
@@ -51,23 +59,19 @@ public class LeBron {
                         return;
                     }
                     case LIST -> {
-                        for (int i = 0; i < list.size(); i++){
-                            System.out.println("    " + (i+1) + ") " + list.get(i));
-                        }
+                        System.out.println(taskList);
                         System.out.println("____________________________________________________________");
                     }
                     case MARK -> {
                         int taskNumber = Integer.parseInt((input.split(" "))[1]);
-                        int index = taskNumber - 1;
-                        list.get(index).setStatus(true);
-                        System.out.println("    " +  "Oh yea we're striving for greatness!\n" + "    " + list.get(index));
+                        taskList.getTask(taskNumber).setStatus(true);
+                        System.out.println("    " +  "Oh yea we're striving for greatness!\n" + "    " + taskList.getTask(taskNumber));
                         System.out.println("____________________________________________________________");
                     }
                     case UNMARK -> {
                         int taskNumber = Integer.parseInt((input.split(" "))[1]);
-                        int index = taskNumber - 1;
-                        list.get(index).setStatus(false);
-                        System.out.println("    " +  "Oh nah we undoing stuff now?\n" + "    " + list.get(index));
+                        taskList.getTask(taskNumber).setStatus(false);
+                        System.out.println("    " +  "Oh nah we undoing stuff now?\n" + "    " + taskList.getTask(taskNumber));
                         System.out.println("____________________________________________________________");
                     }
                     case TODO -> {
@@ -75,10 +79,10 @@ public class LeBron {
                         if (description.isEmpty()) {
                             throw new LeBronException("Whatchu need to do?");
                         }
-                        list.add(new Todo(description));
+                        taskList.addTask(new Todo(description));
                         System.out.println("    More todo!");
-                        System.out.println("    " + list.get(list.size() - 1));
-                        System.out.println("    " + list.size() + " tasks in your grind list now!");
+                        System.out.println("    " + taskList.getTask(taskList.size()));
+                        System.out.println("    " + taskList.size() + " tasks in your grind list now!");
                         System.out.println("____________________________________________________________");
                     }
                     case DEADLINE -> {
@@ -90,10 +94,10 @@ public class LeBron {
                             throw new LeBronException("Do not test me kid, specify your due date!");
                         }
                         String[] parts = fullDesc.split(" by ");
-                        list.add(new Deadline(parts[0], parts[1]));
+                        taskList.addTask(new Deadline(parts[0], parts[1]));
                         System.out.println("    " + "Deadlines forge kings!");
-                        System.out.println("    " + list.get(list.size() - 1));
-                        System.out.println("    " + list.size() + " tasks in your grind list now!");
+                        System.out.println("    " + taskList.getTask(taskList.size()));
+                        System.out.println("    " + taskList.size() + " tasks in your grind list now!");
                         System.out.println("____________________________________________________________");
                     }
                     case EVENT -> {
@@ -105,24 +109,24 @@ public class LeBron {
                             throw new LeBronException("Please tell me when it starts and ends little one.");
                         }
                         String[] parts = fullDesc.split(" from | to ");
-                        list.add(new Event(parts[0], parts[1], parts[2]));
+                        taskList.addTask(new Event(parts[0], parts[1], parts[2]));
                         System.out.println("    " + "Event fit for a king!");
-                        System.out.println("    " + list.get(list.size() - 1));
-                        System.out.println("    " + list.size() + " tasks in your grind list now!");
+                        System.out.println("    " + taskList.getTask(taskList.size()));
+                        System.out.println("    " + taskList.size() + " tasks in your grind list now!");
                         System.out.println("____________________________________________________________");
                     }
                     case DELETE -> {
                         int taskNumber = Integer.parseInt((input.split(" "))[1]);
-                        int index = taskNumber - 1;
-                        Task removed = list.get(index);
-                        list.remove(index);
+                        Task removed = taskList.getTask(taskNumber);
+                        taskList.deleteTask(taskNumber);
                         System.out.println("    Task been taken care of!");
                         System.out.println("    " + removed);
-                        System.out.println("    " + list.size() + " tasks left kiddo.");
+                        System.out.println("    " + taskList.size() + " tasks left kiddo.");
                         System.out.println("____________________________________________________________");
                     }
                     default -> throw new LeBronException("Whatchu tryna do youngblood?");
                 }
+                storage.save(taskList);
             } catch (LeBronException e) {
                 System.out.println("    " + e.getMessage());
                 System.out.println("____________________________________________________________");
@@ -131,6 +135,9 @@ public class LeBron {
                 System.out.println("____________________________________________________________");
             } catch (IndexOutOfBoundsException e) {
                 System.out.println("    This task don't exist, don't piss me off.");
+                System.out.println("____________________________________________________________");
+            } catch (IOException e) {
+                System.out.println("    Couldn't save your grind list, kid.");
                 System.out.println("____________________________________________________________");
             }
         }
