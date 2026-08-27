@@ -1,0 +1,5 @@
+/**
+ * Representing
+ */
+public class Time {
+}

@@ -1,4 +1,7 @@
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 import java.util.ArrayList;
 
@@ -94,7 +97,7 @@ public class LeBron {
                             throw new LeBronException("Do not test me kid, specify your due date!");
                         }
                         String[] parts = fullDesc.split(" by ");
-                        taskList.addTask(new Deadline(parts[0], parts[1]));
+                        taskList.addTask(new Deadline(parts[0], LocalDateTime.parse(parts[1].trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm"))));
                         System.out.println("    " + "Deadlines forge kings!");
                         System.out.println("    " + taskList.getTask(taskList.size()));
                         System.out.println("    " + taskList.size() + " tasks in your grind list now!");
@@ -109,7 +112,8 @@ public class LeBron {
                             throw new LeBronException("Please tell me when it starts and ends little one.");
                         }
                         String[] parts = fullDesc.split(" from | to ");
-                        taskList.addTask(new Event(parts[0], parts[1], parts[2]));
+                        taskList.addTask(new Event(parts[0], LocalDateTime.parse(parts[1].trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm")),
+                                LocalDateTime.parse(parts[2].trim(), DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm"))));
                         System.out.println("    " + "Event fit for a king!");
                         System.out.println("    " + taskList.getTask(taskList.size()));
                         System.out.println("    " + taskList.size() + " tasks in your grind list now!");
@@ -138,6 +142,9 @@ public class LeBron {
                 System.out.println("____________________________________________________________");
             } catch (IOException e) {
                 System.out.println("    Couldn't save your grind list, kid.");
+                System.out.println("____________________________________________________________");
+            } catch (DateTimeParseException e) {
+                System.out.println("    That date don't look right, use yyyy-MM-dd HHmm man, e.g. 2019-10-15 1800.");
                 System.out.println("____________________________________________________________");
             }
         }
