@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,10 +66,11 @@ public class Storage {
             task = new Todo(description);
             break;
         case "D":
-            task = new Deadline(description, parts[3]);
+            task = new Deadline(description, LocalDateTime.parse(parts[3]));
             break;
         case "E":
-            task = new Event(description, parts[3], parts[4]);
+            task = new Event(description, LocalDateTime.parse(parts[3]),
+                    LocalDateTime.parse(parts[4]));
             break;
         default:
             throw new IllegalArgumentException("Unknown task type in save file: " + line);
