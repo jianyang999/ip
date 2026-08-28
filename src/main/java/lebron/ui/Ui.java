@@ -1,4 +1,9 @@
+package lebron.ui;
+
 import java.util.Scanner;
+
+import lebron.task.Task;
+import lebron.task.TaskList;
 
 /**
  * Ui for user interactions
@@ -103,7 +108,7 @@ public class Ui {
     public void showTaskDeleted(Task task, int taskListSize) {
         System.out.println("    Task been taken care of!");
         System.out.println("    " + task.toString());
-        System.out.println("    " + taskListSize + " tasks left to grind now!.");
+        System.out.println("    " + taskListSize + " tasks left to grind now!");
         System.out.println("____________________________________________________________");
     }
 

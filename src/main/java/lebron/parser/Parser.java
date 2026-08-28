@@ -1,9 +1,21 @@
+package lebron.parser;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import lebron.command.ByeCommand;
+import lebron.command.Command;
+import lebron.command.DeadlineCommand;
+import lebron.command.DeleteCommand;
+import lebron.command.EventCommand;
+import lebron.command.ListCommand;
+import lebron.command.MarkCommand;
+import lebron.command.TodoCommand;
+import lebron.command.UnmarkCommand;
+import lebron.exception.LeBronException;
+
 /**
- * Deals with making sense of raw user input: determining the CommandType,
- * and extracting/validating whatever arguments each command needs.
+ * Deals with making sense of raw user input, turning it into an executable Command.
  */
 public class Parser {
     private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
@@ -14,13 +26,53 @@ public class Parser {
     /**
      * Bundles the description and due date/time parsed out of a "deadline" command.
      */
-    public record DeadlineArgs(String description, LocalDateTime by) {
+    private record DeadlineArgs(String description, LocalDateTime by) {
     }
 
     /**
      * Bundles the description and start/end date/time parsed out of an "event" command.
      */
-    public record EventArgs(String description, LocalDateTime start, LocalDateTime end) {
+    private record EventArgs(String description, LocalDateTime start, LocalDateTime end) {
+    }
+
+    /**
+     * Parses raw user input into an executable Command.
+     *
+     * @param input Raw user input.
+     * @return The Command corresponding to the input.
+     * @throws LeBronException if the input is not a recognised, well-formed command.
+     */
+    public static Command parse(String input) throws LeBronException {
+        CommandType commandType = getCommandType(input);
+        switch (commandType) {
+            case BYE -> {
+                return new ByeCommand();
+            }
+            case LIST -> {
+                return new ListCommand();
+            }
+            case TODO -> {
+                return new TodoCommand(parseTodoDescription(input));
+            }
+            case DEADLINE -> {
+                DeadlineArgs args = parseDeadlineArgs(input);
+                return new DeadlineCommand(args.description(), args.by());
+            }
+            case EVENT -> {
+                EventArgs args = parseEventArgs(input);
+                return new EventCommand(args.description(), args.start(), args.end());
+            }
+            case MARK -> {
+                return new MarkCommand(parseTaskNumber(input));
+            }
+            case UNMARK -> {
+                return new UnmarkCommand(parseTaskNumber(input));
+            }
+            case DELETE -> {
+                return new DeleteCommand(parseTaskNumber(input));
+            }
+            default -> throw new LeBronException("Whatchu tryna do youngblood?");
+        }
     }
 
     /**
@@ -29,7 +81,7 @@ public class Parser {
      * @param input Raw user input.
      * @return The CommandType corresponding to the input's first word.
      */
-    public static CommandType getCommandType(String input) {
+    private static CommandType getCommandType(String input) {
         String firstWord = input.split(" ")[0];
         switch (firstWord) {
             case "bye":
@@ -60,7 +112,7 @@ public class Parser {
      * @return The Todo's description.
      * @throws LeBronException if no description was given.
      */
-    public static String parseTodoDescription(String input) throws LeBronException {
+    private static String parseTodoDescription(String input) throws LeBronException {
         String description = input.length() > 4 ? input.substring(5).trim() : "";
         if (description.isEmpty()) {
             throw new LeBronException("Whatchu tryna to do?");
@@ -75,7 +127,7 @@ public class Parser {
      * @return The parsed description and due date/time.
      * @throws LeBronException if no description/date was given, or the "by" keyword is missing.
      */
-    public static DeadlineArgs parseDeadlineArgs(String input) throws LeBronException {
+    private static DeadlineArgs parseDeadlineArgs(String input) throws LeBronException {
         String fullDesc = input.length() > 8 ? input.substring(9).trim() : "";
         if (fullDesc.isEmpty()) {
             throw new LeBronException("Yo specify your deadline!");
@@ -96,7 +148,7 @@ public class Parser {
      * @return The parsed description and start/end date/time.
      * @throws LeBronException if no description/dates were given, or the "from"/"to" keywords are missing.
      */
-    public static EventArgs parseEventArgs(String input) throws LeBronException {
+    private static EventArgs parseEventArgs(String input) throws LeBronException {
         String fullDesc = input.length() > 5 ? input.substring(6).trim() : "";
         if (fullDesc.isEmpty()) {
             throw new LeBronException("What event you tryna go for? Quit playin!");
@@ -117,7 +169,7 @@ public class Parser {
      * @param input Raw user input, e.g. "mark 2".
      * @return The 1-based task number.
      */
-    public static int parseTaskNumber(String input) {
+    private static int parseTaskNumber(String input) {
         return Integer.parseInt((input.split(" "))[1]);
     }
 }
