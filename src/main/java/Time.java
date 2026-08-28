@@ -1,5 +1,0 @@
-/**
- * Representing
- */
-public class Time {
-}

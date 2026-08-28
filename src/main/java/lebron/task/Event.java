@@ -1,9 +1,12 @@
+package lebron.task;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
  * Represents an Event, a Task that occurs over a start and end date/time.
- */public class Event extends Task{
+ */
+public class Event extends Task{
     private LocalDateTime start;
     private LocalDateTime end;
 
