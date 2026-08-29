@@ -18,6 +18,24 @@ import lebron.task.Todo;
  * Class responsible for saving and loading a TaskList to and from disk.
  */
 public class Storage {
+    private final Path filePath;
+
+    /**
+     * Constructs a Storage that reads/writes the default save location, {@code data/LeBron.txt}.
+     */
+    public Storage() {
+        this(Paths.get("data", "LeBron.txt"));
+    }
+
+    /**
+     * Constructs a Storage that reads/writes the given file path.
+     * Mainly useful for testing against a temporary file instead of the real save data.
+     *
+     * @param filePath The file to save to and load from.
+     */
+    public Storage(Path filePath) {
+        this.filePath = filePath;
+    }
 
     /**
      * Saves the given TaskList to disk.
@@ -25,7 +43,6 @@ public class Storage {
      * @param tasks TaskList to be saved.
      */
     public void save(TaskList tasks) throws IOException {
-        Path filePath = Paths.get("data", "LeBron.txt");
         Files.createDirectories(filePath.getParent());
         Files.writeString(filePath, tasks.reformat());
     }
@@ -38,7 +55,6 @@ public class Storage {
      * @throws IOException if the save file exists but cannot be read.
      */
     public TaskList load() throws IOException {
-        Path filePath = Paths.get("data", "LeBron.txt");
         ArrayList<Task> loadedTasks = new ArrayList<>();
 
         if (!Files.exists(filePath)) {
