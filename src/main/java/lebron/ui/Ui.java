@@ -33,7 +33,6 @@ public class Ui {
      * Displays message.
      *
      * @param message to be delivered.
-     * @return nothing, prints message to be shown by LeBron.
      */
     public void showMessage(String message) {
         System.out.println("    " + message);
@@ -44,7 +43,6 @@ public class Ui {
      * Displays tasks in TaskList.
      *
      * @param taskList a list of tasks.
-     * @return nothing, prints tasks in taskList.
      */
     public void showTaskList(TaskList taskList) {
         System.out.println(taskList.toString());
