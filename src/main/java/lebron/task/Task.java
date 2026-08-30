@@ -12,7 +12,7 @@ public class Task {
      *
      * @param description Task description.
      */
-    public Task(String description){
+    public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
@@ -37,6 +37,6 @@ public class Task {
 
     @Override
     public String toString() {
-        return this.isDone? "[X] " + this.description: "[ ] " + this.description;
+        return this.isDone ? "[X] " + this.description : "[ ] " + this.description;
     }
 }
