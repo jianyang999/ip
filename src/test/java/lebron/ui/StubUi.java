@@ -1,5 +1,7 @@
 package lebron.ui;
 
+import java.util.List;
+
 import lebron.task.Task;
 import lebron.task.TaskList;
 
@@ -21,6 +23,7 @@ public class StubUi extends Ui {
     public int lastTaskDeletedSize;
     public Task lastTaskMarked;
     public Task lastTaskUnmarked;
+    public List<Task> lastMatchingTasks;
 
     @Override
     public void showBanner() {
@@ -69,5 +72,10 @@ public class StubUi extends Ui {
     @Override
     public void showTaskUnmarked(Task task) {
         this.lastTaskUnmarked = task;
+    }
+
+    @Override
+    public void showMatchingTasks(List<Task> matches) {
+        this.lastMatchingTasks = matches;
     }
 }

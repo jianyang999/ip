@@ -1,5 +1,6 @@
 package lebron.ui;
 
+import java.util.List;
 import java.util.Scanner;
 
 import lebron.task.Task;
@@ -129,6 +130,19 @@ public class Ui {
     public void showTaskUnmarked(Task task) {
         System.out.println("    Oh nah we undoing stuff now?");
         System.out.println("    " + task.toString());
+        System.out.println("____________________________________________________________");
+    }
+
+    /**
+     * Displays the tasks that matched a search keyword.
+     *
+     * @param matches The tasks whose description matched the search keyword.
+     */
+    public void showMatchingTasks(List<Task> matches) {
+        System.out.println("    Here's what's matching your search, chief!");
+        for (int i = 0; i < matches.size(); i++) {
+            System.out.println("    " + (i + 1) + ". " + matches.get(i));
+        }
         System.out.println("____________________________________________________________");
     }
 }

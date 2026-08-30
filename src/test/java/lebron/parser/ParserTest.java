@@ -147,6 +147,30 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_findValid_reportsOnlyMatchingTasksToUi() throws LeBronException {
+        StubUi ui = new StubUi();
+        TaskList taskList = new TaskList(new ArrayList<>());
+        taskList.addTask(new Todo("read book"));
+        taskList.addTask(new Todo("write essay"));
+
+        Command command = Parser.parse("find book");
+        command.execute(taskList, ui);
+
+        assertEquals(1, ui.lastMatchingTasks.size());
+        assertEquals("[T][ ] read book", ui.lastMatchingTasks.get(0).toString());
+    }
+
+    @Test
+    public void parse_findMissingKeyword_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse("find"));
+    }
+
+    @Test
+    public void parse_findBlankKeyword_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse("find    "));
+    }
+
+    @Test
     public void parse_unknownCommand_exceptionThrown() {
         assertThrows(LeBronException.class, () -> Parser.parse("frobnicate"));
     }

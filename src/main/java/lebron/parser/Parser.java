@@ -8,6 +8,7 @@ import lebron.command.Command;
 import lebron.command.DeadlineCommand;
 import lebron.command.DeleteCommand;
 import lebron.command.EventCommand;
+import lebron.command.FindCommand;
 import lebron.command.ListCommand;
 import lebron.command.MarkCommand;
 import lebron.command.TodoCommand;
@@ -71,6 +72,9 @@ public class Parser {
             case DELETE -> {
                 return new DeleteCommand(parseTaskNumber(input));
             }
+            case FIND -> {
+                return new FindCommand(parseFindKeyword(input));
+            }
             default -> throw new LeBronException("Whatchu tryna do youngblood?");
         }
     }
@@ -100,6 +104,8 @@ public class Parser {
                 return CommandType.EVENT;
             case "delete":
                 return CommandType.DELETE;
+            case "find":
+                return CommandType.FIND;
             default:
                 return CommandType.UNKNOWN;
         }
@@ -161,6 +167,21 @@ public class Parser {
         LocalDateTime start = LocalDateTime.parse(parts[1].trim(), INPUT_DATE_FORMAT);
         LocalDateTime end = LocalDateTime.parse(parts[2].trim(), INPUT_DATE_FORMAT);
         return new EventArgs(description, start, end);
+    }
+
+    /**
+     * Extracts and validates the keyword from a "find" command.
+     *
+     * @param input Raw user input, e.g. "find book".
+     * @return The search keyword.
+     * @throws LeBronException if no keyword was given.
+     */
+    private static String parseFindKeyword(String input) throws LeBronException {
+        String keyword = input.length() > 4 ? input.substring(5).trim() : "";
+        if (keyword.isEmpty()) {
+            throw new LeBronException("Whatchu tryna find?");
+        }
+        return keyword;
     }
 
     /**
