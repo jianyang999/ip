@@ -11,11 +11,20 @@ import lebron.storage.Storage;
 import lebron.task.TaskList;
 import lebron.ui.Ui;
 
+/**
+ * Entry point of the LeBron task-list application.
+ * Wires together the {@link Ui}, {@link Storage}, and {@link TaskList} components
+ * and runs the main command loop.
+ */
 public class LeBron {
     private Storage storage;
     private TaskList taskList;
     private Ui ui;
 
+    /**
+     * Constructs a LeBron instance, loading any previously saved TaskList.
+     * If no save file exists or it cannot be loaded, starts with an empty TaskList.
+     */
     public LeBron() {
         ui = new Ui();
         storage = new Storage();
@@ -27,6 +36,10 @@ public class LeBron {
         }
     }
 
+    /**
+     * Runs the main command loop: greets the user, then repeatedly reads,
+     * parses, and executes commands until a "bye" command is received.
+     */
     public void run() {
         ui.showBanner();
         while (true) {
@@ -53,6 +66,11 @@ public class LeBron {
         }
     }
 
+    /**
+     * Starts the application.
+     *
+     * @param args Command-line arguments (not used).
+     */
     public static void main(String[] args) {
         new LeBron().run();
     }

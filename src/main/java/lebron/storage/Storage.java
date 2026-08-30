@@ -41,6 +41,7 @@ public class Storage {
      * Saves the given TaskList to disk.
      *
      * @param tasks TaskList to be saved.
+     * @throws IOException if the save directory or file cannot be written to.
      */
     public void save(TaskList tasks) throws IOException {
         Files.createDirectories(filePath.getParent());
