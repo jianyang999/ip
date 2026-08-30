@@ -82,6 +82,36 @@ public class TaskListTest {
     }
 
     @Test
+    public void findTasks_keywordMatchesSome_returnsOnlyMatchingTasksInOrder() {
+        TaskList taskList = new TaskList(new ArrayList<>());
+        taskList.addTask(new Todo("read book"));
+        taskList.addTask(new Todo("write essay"));
+        taskList.addTask(new Todo("return book"));
+
+        ArrayList<Task> matches = taskList.findTasks("book");
+
+        assertEquals(2, matches.size());
+        assertEquals("[T][ ] read book", matches.get(0).toString());
+        assertEquals("[T][ ] return book", matches.get(1).toString());
+    }
+
+    @Test
+    public void findTasks_keywordDifferentCase_stillMatches() {
+        TaskList taskList = new TaskList(new ArrayList<>());
+        taskList.addTask(new Todo("read Book"));
+
+        assertEquals(1, taskList.findTasks("book").size());
+    }
+
+    @Test
+    public void findTasks_noKeywordMatch_returnsEmptyList() {
+        TaskList taskList = new TaskList(new ArrayList<>());
+        taskList.addTask(new Todo("read book"));
+
+        assertEquals(0, taskList.findTasks("essay").size());
+    }
+
+    @Test
     public void size_emptyList_returnsZero() {
         TaskList taskList = new TaskList(new ArrayList<>());
         assertEquals(0, taskList.size());
