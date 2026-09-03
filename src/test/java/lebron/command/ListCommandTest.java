@@ -8,17 +8,18 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import lebron.task.TaskList;
-import lebron.ui.StubUi;
+import lebron.task.Todo;
+import lebron.ui.Ui;
 
 public class ListCommandTest {
     @Test
     public void execute_reportsTaskListToUi() {
         TaskList taskList = new TaskList(new ArrayList<>());
-        StubUi ui = new StubUi();
+        taskList.addTask(new Todo("read book"));
 
-        new ListCommand().execute(taskList, ui);
+        String response = new ListCommand().execute(taskList, new Ui());
 
-        assertEquals(taskList, ui.lastShownTaskList);
+        assertEquals(taskList.toString(), response);
     }
 
     @Test

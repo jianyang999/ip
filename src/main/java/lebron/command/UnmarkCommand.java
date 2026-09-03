@@ -21,9 +21,9 @@ public class UnmarkCommand implements Command {
     }
 
     @Override
-    public void execute(TaskList taskList, Ui ui) throws LeBronException {
+    public String execute(TaskList taskList, Ui ui) throws LeBronException {
         Task task = taskList.getTask(taskNumber);
         task.setStatus(false);
-        ui.showTaskUnmarked(task);
+        return ui.showTaskUnmarked(task);
     }
 }

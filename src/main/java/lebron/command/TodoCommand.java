@@ -21,9 +21,9 @@ public class TodoCommand implements Command {
     }
 
     @Override
-    public void execute(TaskList taskList, Ui ui) {
+    public String execute(TaskList taskList, Ui ui) {
         Task task = new Todo(description);
         taskList.addTask(task);
-        ui.showTodoAdded(task, taskList.size());
+        return ui.showTodoAdded(task, taskList.size());
     }
 }

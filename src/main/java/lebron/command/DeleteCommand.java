@@ -21,9 +21,9 @@ public class DeleteCommand implements Command {
     }
 
     @Override
-    public void execute(TaskList taskList, Ui ui) throws LeBronException {
+    public String execute(TaskList taskList, Ui ui) throws LeBronException {
         Task task = taskList.getTask(taskNumber);
         taskList.deleteTask(taskNumber);
-        ui.showTaskDeleted(task, taskList.size());
+        return ui.showTaskDeleted(task, taskList.size());
     }
 }

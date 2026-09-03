@@ -8,7 +8,7 @@ import lebron.ui.Ui;
  */
 public class ListCommand implements Command {
     @Override
-    public void execute(TaskList taskList, Ui ui) {
-        ui.showTaskList(taskList);
+    public String execute(TaskList taskList, Ui ui) {
+        return ui.showTaskList(taskList);
     }
 }

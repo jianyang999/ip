@@ -2,6 +2,7 @@ package lebron.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
@@ -11,7 +12,7 @@ import lebron.exception.LeBronException;
 import lebron.task.TaskList;
 import lebron.task.TaskListException;
 import lebron.task.Todo;
-import lebron.ui.StubUi;
+import lebron.ui.Ui;
 
 public class UnmarkCommandTest {
     @Test
@@ -20,22 +21,20 @@ public class UnmarkCommandTest {
         Todo todo = new Todo("read book");
         todo.setStatus(true);
         taskList.addTask(todo);
-        StubUi ui = new StubUi();
         Command command = new UnmarkCommand(1);
 
-        command.execute(taskList, ui);
+        String response = command.execute(taskList, new Ui());
 
         assertEquals("[T][ ] read book", taskList.getTask(1).toString());
-        assertEquals("[T][ ] read book", ui.lastTaskUnmarked.toString());
+        assertTrue(response.contains("[T][ ] read book"));
     }
 
     @Test
     public void execute_taskNumberOutOfRange_exceptionThrown() {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
-        StubUi ui = new StubUi();
         Command command = new UnmarkCommand(0);
 
-        assertThrows(TaskListException.class, () -> command.execute(taskList, ui));
+        assertThrows(TaskListException.class, () -> command.execute(taskList, new Ui()));
     }
 }
