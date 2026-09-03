@@ -1,6 +1,7 @@
 package lebron.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
@@ -8,20 +9,19 @@ import org.junit.jupiter.api.Test;
 
 import lebron.exception.LeBronException;
 import lebron.task.TaskList;
-import lebron.ui.StubUi;
+import lebron.ui.Ui;
 
 public class TodoCommandTest {
     @Test
     public void execute_validDescription_taskAddedToListAndReportedToUi() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
-        StubUi ui = new StubUi();
         Command command = new TodoCommand("read book");
 
-        command.execute(taskList, ui);
+        String response = command.execute(taskList, new Ui());
 
         assertEquals(1, taskList.size());
-        assertEquals("[T][ ] read book", ui.lastTodoAdded.toString());
-        assertEquals(1, ui.lastTodoAddedSize);
+        assertTrue(response.contains("[T][ ] read book"));
+        assertTrue(response.contains("1 tasks left to grind now!"));
     }
 
     @Test

@@ -29,9 +29,9 @@ public class EventCommand implements Command {
     }
 
     @Override
-    public void execute(TaskList taskList, Ui ui) {
+    public String execute(TaskList taskList, Ui ui) {
         Task task = new Event(description, start, end);
         taskList.addTask(task);
-        ui.showEventAdded(task, taskList.size());
+        return ui.showEventAdded(task, taskList.size());
     }
 }

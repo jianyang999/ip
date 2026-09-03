@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import lebron.task.TaskList;
-import lebron.ui.StubUi;
+import lebron.ui.Ui;
 
 public class ByeCommandTest {
     @Test
@@ -18,9 +18,8 @@ public class ByeCommandTest {
 
     @Test
     public void execute_showsGoodbyeMessage() {
-        StubUi ui = new StubUi();
-        new ByeCommand().execute(new TaskList(new ArrayList<>()), ui);
+        String response = new ByeCommand().execute(new TaskList(new ArrayList<>()), new Ui());
 
-        assertEquals("Peace out see ya later!", ui.lastMessage);
+        assertEquals("Peace out see ya later!", response);
     }
 }

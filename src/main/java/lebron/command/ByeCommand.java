@@ -8,8 +8,8 @@ import lebron.ui.Ui;
  */
 public class ByeCommand implements Command {
     @Override
-    public void execute(TaskList taskList, Ui ui) {
-        ui.showMessage("Peace out see ya later!");
+    public String execute(TaskList taskList, Ui ui) {
+        return ui.showMessage("Peace out see ya later!");
     }
 
     @Override

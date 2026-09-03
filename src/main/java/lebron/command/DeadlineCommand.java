@@ -26,9 +26,9 @@ public class DeadlineCommand implements Command {
     }
 
     @Override
-    public void execute(TaskList taskList, Ui ui) {
+    public String execute(TaskList taskList, Ui ui) {
         Task task = new Deadline(description, by);
         taskList.addTask(task);
-        ui.showDeadlineAdded(task, taskList.size());
+        return ui.showDeadlineAdded(task, taskList.size());
     }
 }

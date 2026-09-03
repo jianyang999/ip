@@ -13,19 +13,17 @@ import lebron.command.Command;
 import lebron.exception.LeBronException;
 import lebron.task.TaskList;
 import lebron.task.Todo;
-import lebron.ui.StubUi;
+import lebron.ui.Ui;
 
 public class ParserTest {
     /**
-     * Parses the input and executes the resulting Command against a fresh TaskList,
+     * Parses the input and executes the resulting Command against the given TaskList,
      * so we can verify what Parser produced by checking its observable effect
-     * (Command's fields are private with no getters).
+     * (Command's fields are private with no getters) and its reply message.
      */
-    private TaskList parseAndExecute(String input, StubUi ui) throws LeBronException {
-        TaskList taskList = new TaskList(new ArrayList<>());
+    private String parseAndExecute(String input, TaskList taskList) throws LeBronException {
         Command command = Parser.parse(input);
-        command.execute(taskList, ui);
-        return taskList;
+        return command.execute(taskList, new Ui());
     }
 
     @Test
@@ -36,22 +34,21 @@ public class ParserTest {
 
     @Test
     public void parse_list_returnsCommandThatShowsTaskList() throws LeBronException {
-        StubUi ui = new StubUi();
         TaskList taskList = new TaskList(new ArrayList<>());
-        Command command = Parser.parse("list");
 
-        command.execute(taskList, ui);
+        String response = parseAndExecute("list", taskList);
 
-        assertEquals(taskList, ui.lastShownTaskList);
+        assertEquals(taskList.toString(), response);
     }
 
     @Test
     public void parse_todoValid_addsTodoWithCorrectDescription() throws LeBronException {
-        StubUi ui = new StubUi();
-        TaskList taskList = parseAndExecute("todo read book", ui);
+        TaskList taskList = new TaskList(new ArrayList<>());
+
+        String response = parseAndExecute("todo read book", taskList);
 
         assertEquals(1, taskList.size());
-        assertEquals("[T][ ] read book", ui.lastTodoAdded.toString());
+        assertTrue(response.contains("[T][ ] read book"));
     }
 
     @Test
@@ -66,11 +63,12 @@ public class ParserTest {
 
     @Test
     public void parse_deadlineValid_addsDeadlineWithCorrectDescriptionAndDate() throws LeBronException {
-        StubUi ui = new StubUi();
-        TaskList taskList = parseAndExecute("deadline return book by 2019-10-15 1800", ui);
+        TaskList taskList = new TaskList(new ArrayList<>());
+
+        String response = parseAndExecute("deadline return book by 2019-10-15 1800", taskList);
 
         assertEquals(1, taskList.size());
-        assertEquals("[D][ ] return book (by: Oct 15 2019)", ui.lastDeadlineAdded.toString());
+        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019)"));
     }
 
     @Test
@@ -91,11 +89,13 @@ public class ParserTest {
 
     @Test
     public void parse_eventValid_addsEventWithCorrectDescriptionAndDates() throws LeBronException {
-        StubUi ui = new StubUi();
-        TaskList taskList = parseAndExecute("event project meeting from 2019-10-16 0900 to 2019-10-16 1100", ui);
+        TaskList taskList = new TaskList(new ArrayList<>());
+
+        String response = parseAndExecute(
+                "event project meeting from 2019-10-16 0900 to 2019-10-16 1100", taskList);
 
         assertEquals(1, taskList.size());
-        assertEquals("[E][ ] project meeting (from Oct 16 2019 til Oct 16 2019)", ui.lastEventAdded.toString());
+        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019 til Oct 16 2019)"));
     }
 
     @Test
@@ -110,54 +110,46 @@ public class ParserTest {
 
     @Test
     public void parse_markValid_marksCorrectTask() throws LeBronException {
-        StubUi ui = new StubUi();
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
 
-        Command command = Parser.parse("mark 1");
-        command.execute(taskList, ui);
+        String response = parseAndExecute("mark 1", taskList);
 
-        assertEquals("[T][X] read book", ui.lastTaskMarked.toString());
+        assertTrue(response.contains("[T][X] read book"));
     }
 
     @Test
     public void parse_unmarkValid_unmarksCorrectTask() throws LeBronException {
-        StubUi ui = new StubUi();
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
         taskList.getTask(1).setStatus(true);
 
-        Command command = Parser.parse("unmark 1");
-        command.execute(taskList, ui);
+        String response = parseAndExecute("unmark 1", taskList);
 
-        assertEquals("[T][ ] read book", ui.lastTaskUnmarked.toString());
+        assertTrue(response.contains("[T][ ] read book"));
     }
 
     @Test
     public void parse_deleteValid_deletesCorrectTask() throws LeBronException {
-        StubUi ui = new StubUi();
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
 
-        Command command = Parser.parse("delete 1");
-        command.execute(taskList, ui);
+        String response = parseAndExecute("delete 1", taskList);
 
         assertEquals(0, taskList.size());
-        assertEquals("[T][ ] read book", ui.lastTaskDeleted.toString());
+        assertTrue(response.contains("[T][ ] read book"));
     }
 
     @Test
     public void parse_findValid_reportsOnlyMatchingTasksToUi() throws LeBronException {
-        StubUi ui = new StubUi();
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
         taskList.addTask(new Todo("write essay"));
 
-        Command command = Parser.parse("find book");
-        command.execute(taskList, ui);
+        String response = parseAndExecute("find book", taskList);
 
-        assertEquals(1, ui.lastMatchingTasks.size());
-        assertEquals("[T][ ] read book", ui.lastMatchingTasks.get(0).toString());
+        assertTrue(response.contains("[T][ ] read book"));
+        assertEquals(2, response.split("\n").length);
     }
 
     @Test

@@ -2,6 +2,7 @@ package lebron.command;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.ArrayList;
 
@@ -9,7 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import lebron.task.TaskList;
 import lebron.task.Todo;
-import lebron.ui.StubUi;
+import lebron.ui.Ui;
 
 public class FindCommandTest {
     @Test
@@ -17,23 +18,22 @@ public class FindCommandTest {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
         taskList.addTask(new Todo("write essay"));
-        StubUi ui = new StubUi();
 
-        new FindCommand("book").execute(taskList, ui);
+        String response = new FindCommand("book").execute(taskList, new Ui());
 
-        assertEquals(1, ui.lastMatchingTasks.size());
-        assertEquals("[T][ ] read book", ui.lastMatchingTasks.get(0).toString());
+        assertTrue(response.contains("[T][ ] read book"));
+        assertFalse(response.contains("write essay"));
     }
 
     @Test
     public void execute_noMatch_reportsEmptyListToUi() {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
-        StubUi ui = new StubUi();
 
-        new FindCommand("essay").execute(taskList, ui);
+        String response = new FindCommand("essay").execute(taskList, new Ui());
 
-        assertEquals(0, ui.lastMatchingTasks.size());
+        assertFalse(response.contains("[T]"));
+        assertEquals("Here's what's matching your search, chief!", response);
     }
 
     @Test
