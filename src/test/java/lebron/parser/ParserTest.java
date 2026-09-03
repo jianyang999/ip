@@ -83,8 +83,7 @@ public class ParserTest {
 
     @Test
     public void parse_deadlineMalformedDate_dateTimeParseExceptionThrown() {
-        assertThrows(DateTimeParseException.class,
-                () -> Parser.parse("deadline return book by not-a-date"));
+        assertThrows(DateTimeParseException.class, () -> Parser.parse("deadline return book by not-a-date"));
     }
 
     @Test
