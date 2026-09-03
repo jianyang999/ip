@@ -87,18 +87,18 @@ public class Storage {
 
         Task task;
         switch (type) {
-        case "T":
-            task = new Todo(description);
-            break;
-        case "D":
-            task = new Deadline(description, LocalDateTime.parse(parts[3]));
-            break;
-        case "E":
-            task = new Event(description, LocalDateTime.parse(parts[3]),
-                    LocalDateTime.parse(parts[4]));
-            break;
-        default:
-            throw new IllegalArgumentException("Unknown task type in save file: " + line);
+            case "T":
+                task = new Todo(description);
+                break;
+            case "D":
+                task = new Deadline(description, LocalDateTime.parse(parts[3]));
+                break;
+            case "E":
+                task = new Event(description, LocalDateTime.parse(parts[3]),
+                        LocalDateTime.parse(parts[4]));
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown task type in save file: " + line);
         }
 
         task.setStatus(isDone);
