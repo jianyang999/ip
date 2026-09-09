@@ -2,6 +2,8 @@ package lebron.ui;
 
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import lebron.task.Task;
 import lebron.task.TaskList;
@@ -131,10 +133,13 @@ public class Ui {
      * @return The message listing the matching tasks.
      */
     public String showMatchingTasks(List<Task> matches) {
-        StringBuilder result = new StringBuilder("Here's what's matching your search, chief!");
-        for (int i = 0; i < matches.size(); i++) {
-            result.append("\n").append(i + 1).append(". ").append(matches.get(i));
+        String header = "Here's what's matching your search, chief!";
+        if (matches.isEmpty()) {
+            return header;
         }
-        return result.toString();
+        String listing = IntStream.range(0, matches.size())
+                .mapToObj(i -> (i + 1) + ". " + matches.get(i))
+                .collect(Collectors.joining("\n"));
+        return header + "\n" + listing;
     }
 }

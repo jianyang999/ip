@@ -1,6 +1,8 @@
 package lebron.task;
 
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Represents a list of tasks.
@@ -59,13 +61,9 @@ public class TaskList {
      * @return The matching tasks, in their original order.
      */
     public ArrayList<Task> findTasks(String keyword) {
-        ArrayList<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(task -> task.getDescription().toLowerCase().contains(keyword.toLowerCase()))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -83,19 +81,15 @@ public class TaskList {
      * @return Reformatted String.
      */
     public String reformat() {
-        StringBuilder sb = new StringBuilder();
-        for (Task task : tasks) {
-            sb.append(task.reformat()).append("\n");
-        }
-        return sb.toString();
+        return tasks.stream()
+                .map(task -> task.reformat() + "\n")
+                .collect(Collectors.joining());
     }
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < tasks.size(); i++) {
-            sb.append(i + 1).append(". ").append(tasks.get(i)).append("\n");
-        }
-        return sb.toString();
+        return IntStream.range(0, tasks.size())
+                .mapToObj(i -> (i + 1) + ". " + tasks.get(i) + "\n")
+                .collect(Collectors.joining());
     }
 }
