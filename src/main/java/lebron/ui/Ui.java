@@ -120,6 +120,17 @@ public class Ui {
     }
 
     /**
+     * Builds a message confirming that a RecurringTask was added.
+     *
+     * @param task The RecurringTask that was added.
+     * @param taskListSize The number of tasks in the list after adding.
+     * @return The confirmation message.
+     */
+    public String showRecurringAdded(Task task, int taskListSize) {
+        return formatTaskCountMessage("Got you, this one's on repeat!", task, taskListSize);
+    }
+
+    /**
      * Builds a message confirming that a task was deleted.
      *
      * @param task The task that was deleted.

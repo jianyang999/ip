@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import lebron.task.Deadline;
 import lebron.task.Event;
+import lebron.task.RecurrenceInterval;
+import lebron.task.RecurringTask;
 import lebron.task.Task;
 import lebron.task.TaskList;
 import lebron.task.Todo;
@@ -98,6 +100,11 @@ public class Storage {
                 assert parts.length >= 5 : "An Event line should also carry its start and end date/time";
                 task = new Event(description, LocalDateTime.parse(parts[3]),
                         LocalDateTime.parse(parts[4]));
+                break;
+            case "R":
+                assert parts.length >= 5 : "A RecurringTask line should also carry its due date/time and interval";
+                task = new RecurringTask(description, LocalDateTime.parse(parts[3]),
+                        RecurrenceInterval.valueOf(parts[4]));
                 break;
             default:
                 throw new IllegalArgumentException("Unknown task type in save file: " + line);
