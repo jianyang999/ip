@@ -70,14 +70,7 @@ public class LeBron {
             String response = command.execute(taskList, ui);
             assert response != null : "Every Command should return a non-null reply message";
             isExit = command.isExit();
-            if (!isExit) {
-                try {
-                    storage.save(taskList);
-                } catch (IOException e) {
-                    response = response + "\n" + ui.showMessage("Couldn't save your grind list.");
-                }
-            }
-            return response;
+            return isExit ? response : response + saveAndGetErrorSuffix();
         } catch (LeBronException e) {
             return ui.showMessage(e.getMessage());
         } catch (NumberFormatException | IndexOutOfBoundsException e) {
@@ -85,6 +78,22 @@ public class LeBron {
         } catch (DateTimeParseException e) {
             return ui.showMessage(
                     "That date don't look right, use yyyy-MM-dd HHmm man, e.g. 2019-10-15 1800.");
+        }
+    }
+
+    /**
+     * Saves the current TaskList to disk, returning an appendable error message
+     * ("" on success) so the caller can tack any failure onto the command's own
+     * reply instead of losing it.
+     *
+     * @return "" if the save succeeded, or a "\n"-prefixed error message if it failed.
+     */
+    private String saveAndGetErrorSuffix() {
+        try {
+            storage.save(taskList);
+            return "";
+        } catch (IOException e) {
+            return "\n" + ui.showMessage("Couldn't save your grind list.");
         }
     }
 

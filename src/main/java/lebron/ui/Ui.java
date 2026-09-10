@@ -63,6 +63,30 @@ public class Ui {
     }
 
     /**
+     * Builds a message pairing a header line with the task it refers to.
+     *
+     * @param header The message's opening line.
+     * @param task The task the message is about.
+     * @return The combined message.
+     */
+    private String formatTaskMessage(String header, Task task) {
+        return header + "\n" + task;
+    }
+
+    /**
+     * Builds a message pairing a header line with the task it refers to, followed by
+     * how many tasks remain in the list.
+     *
+     * @param header The message's opening line.
+     * @param task The task the message is about.
+     * @param taskListSize The number of tasks in the list after this change.
+     * @return The combined message.
+     */
+    private String formatTaskCountMessage(String header, Task task, int taskListSize) {
+        return formatTaskMessage(header, task) + "\n" + taskListSize + " tasks left to grind now!";
+    }
+
+    /**
      * Builds a message confirming that a Todo was added.
      *
      * @param task The Todo that was added.
@@ -70,7 +94,7 @@ public class Ui {
      * @return The confirmation message.
      */
     public String showTodoAdded(Task task, int taskListSize) {
-        return "More todo!\n" + task + "\n" + taskListSize + " tasks left to grind now!";
+        return formatTaskCountMessage("More todo!", task, taskListSize);
     }
 
     /**
@@ -81,7 +105,7 @@ public class Ui {
      * @return The confirmation message.
      */
     public String showDeadlineAdded(Task task, int taskListSize) {
-        return "Don't put these off!\n" + task + "\n" + taskListSize + " tasks left to grind now!";
+        return formatTaskCountMessage("Don't put these off!", task, taskListSize);
     }
 
     /**
@@ -92,7 +116,7 @@ public class Ui {
      * @return The confirmation message.
      */
     public String showEventAdded(Task task, int taskListSize) {
-        return "Go have some fun young blood!\n" + task + "\n" + taskListSize + " tasks left to grind now!";
+        return formatTaskCountMessage("Go have some fun young blood!", task, taskListSize);
     }
 
     /**
@@ -103,7 +127,7 @@ public class Ui {
      * @return The confirmation message.
      */
     public String showTaskDeleted(Task task, int taskListSize) {
-        return "Task been taken care of!\n" + task + "\n" + taskListSize + " tasks left to grind now!";
+        return formatTaskCountMessage("Task been taken care of!", task, taskListSize);
     }
 
     /**
@@ -113,7 +137,7 @@ public class Ui {
      * @return The confirmation message.
      */
     public String showTaskMarked(Task task) {
-        return "Oh yea we're striving for greatness!\n" + task;
+        return formatTaskMessage("Oh yea we're striving for greatness!", task);
     }
 
     /**
@@ -123,7 +147,7 @@ public class Ui {
      * @return The confirmation message.
      */
     public String showTaskUnmarked(Task task) {
-        return "Oh nah we undoing stuff now?\n" + task;
+        return formatTaskMessage("Oh nah we undoing stuff now?", task);
     }
 
     /**
