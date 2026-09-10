@@ -68,6 +68,7 @@ public class LeBron {
         try {
             Command command = Parser.parse(input);
             String response = command.execute(taskList, ui);
+            assert response != null : "Every Command should return a non-null reply message";
             isExit = command.isExit();
             return isExit ? response : response + saveAndGetErrorSuffix();
         } catch (LeBronException e) {
