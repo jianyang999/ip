@@ -165,4 +165,36 @@ public class ParserTest {
     public void parse_unknownCommand_exceptionThrown() {
         assertThrows(LeBronException.class, () -> Parser.parse("frobnicate"));
     }
+
+    @Test
+    public void parse_recurValid_addsRecurringTaskWithCorrectDescriptionIntervalAndDate() throws LeBronException {
+        TaskList taskList = new TaskList(new ArrayList<>());
+
+        String response = parseAndExecute("recur project meeting every week from 2019-10-15 1800", taskList);
+
+        assertEquals(1, taskList.size());
+        assertTrue(response.contains("[R][ ] project meeting (every week, next due: Oct 15 2019)"));
+    }
+
+    @Test
+    public void parse_recurMissingDescription_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse("recur"));
+    }
+
+    @Test
+    public void parse_recurMissingEveryFromKeywords_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse("recur project meeting week 2019-10-15 1800"));
+    }
+
+    @Test
+    public void parse_recurUnknownInterval_exceptionThrown() {
+        assertThrows(LeBronException.class, () ->
+                Parser.parse("recur project meeting every fortnight from 2019-10-15 1800"));
+    }
+
+    @Test
+    public void parse_recurMalformedDate_dateTimeParseExceptionThrown() {
+        assertThrows(DateTimeParseException.class, () ->
+                Parser.parse("recur project meeting every week from not-a-date"));
+    }
 }

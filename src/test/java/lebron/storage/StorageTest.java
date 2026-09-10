@@ -14,6 +14,8 @@ import org.junit.jupiter.api.io.TempDir;
 
 import lebron.task.Deadline;
 import lebron.task.Event;
+import lebron.task.RecurrenceInterval;
+import lebron.task.RecurringTask;
 import lebron.task.TaskList;
 import lebron.task.Todo;
 
@@ -41,6 +43,19 @@ public class StorageTest {
         original.addTask(new Deadline("return book", LocalDateTime.of(2019, 10, 15, 18, 0)));
         original.addTask(new Event("project meeting",
                 LocalDateTime.of(2019, 10, 16, 9, 0), LocalDateTime.of(2019, 10, 16, 11, 0)));
+
+        storage.save(original);
+        TaskList loaded = storage.load();
+
+        assertEquals(original.toString(), loaded.toString());
+    }
+
+    @Test
+    public void saveThenLoad_recurringTask_roundTripsCorrectly() throws IOException {
+        Storage storage = newStorage();
+        TaskList original = new TaskList(new ArrayList<>());
+        original.addTask(new RecurringTask("project meeting",
+                LocalDateTime.of(2019, 10, 15, 18, 0), RecurrenceInterval.WEEKLY));
 
         storage.save(original);
         TaskList loaded = storage.load();

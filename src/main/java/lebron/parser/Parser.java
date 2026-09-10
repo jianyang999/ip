@@ -11,9 +11,11 @@ import lebron.command.EventCommand;
 import lebron.command.FindCommand;
 import lebron.command.ListCommand;
 import lebron.command.MarkCommand;
+import lebron.command.RecurringCommand;
 import lebron.command.TodoCommand;
 import lebron.command.UnmarkCommand;
 import lebron.exception.LeBronException;
+import lebron.task.RecurrenceInterval;
 
 /**
  * Deals with making sense of raw user input, turning it into an executable Command.
@@ -34,6 +36,12 @@ public class Parser {
      * Bundles the description and start/end date/time parsed out of an "event" command.
      */
     private record EventArgs(String description, LocalDateTime start, LocalDateTime end) {
+    }
+
+    /**
+     * Bundles the description, next due date/time, and interval parsed out of a "recur" command.
+     */
+    private record RecurringArgs(String description, LocalDateTime nextDue, RecurrenceInterval interval) {
     }
 
     /**
@@ -75,6 +83,10 @@ public class Parser {
             case FIND -> {
                 return new FindCommand(parseFindKeyword(input));
             }
+            case RECUR -> {
+                RecurringArgs args = parseRecurringArgs(input);
+                return new RecurringCommand(args.description(), args.nextDue(), args.interval());
+            }
             default -> throw new LeBronException("Whatchu tryna do youngblood?");
         }
     }
@@ -106,6 +118,8 @@ public class Parser {
                 return CommandType.DELETE;
             case "find":
                 return CommandType.FIND;
+            case "recur":
+                return CommandType.RECUR;
             default:
                 return CommandType.UNKNOWN;
         }
@@ -195,6 +209,31 @@ public class Parser {
             throw new LeBronException("Whatchu tryna find?");
         }
         return keyword;
+    }
+
+    /**
+     * Extracts and validates the description, interval, and next due date/time from a
+     * "recur" command.
+     *
+     * @param input Raw user input, e.g. "recur project meeting every week from 2019-10-15 1800".
+     * @return The parsed description, next due date/time, and interval.
+     * @throws LeBronException if no description/interval/date was given, the "every"/"from"
+     *         keywords are missing, or the interval is not "day", "week", or "month".
+     */
+    private static RecurringArgs parseRecurringArgs(String input) throws LeBronException {
+        String fullDesc = extractArgs(input, "recur");
+        if (fullDesc.isEmpty()) {
+            throw new LeBronException("What's on repeat? Give me the details!");
+        }
+        if (!fullDesc.contains(" every ") || !fullDesc.contains(" from ")) {
+            throw new LeBronException("Tell me how often and when it starts!");
+        }
+        String[] descAndRest = fullDesc.split(" every ", 2);
+        String description = descAndRest[0];
+        String[] intervalAndDate = descAndRest[1].split(" from ");
+        RecurrenceInterval interval = RecurrenceInterval.fromKeyword(intervalAndDate[0].trim());
+        LocalDateTime nextDue = LocalDateTime.parse(intervalAndDate[1].trim(), INPUT_DATE_FORMAT);
+        return new RecurringArgs(description, nextDue, interval);
     }
 
     /**
