@@ -15,6 +15,7 @@ public class TaskList {
      * @param tasks The list of tasks.
      */
     public TaskList(ArrayList<Task> tasks) {
+        assert tasks != null : "The list passed to TaskList should not be null";
         this.tasks = new ArrayList<>(tasks);
     }
 
@@ -61,6 +62,7 @@ public class TaskList {
      * @return The matching tasks, in their original order.
      */
     public ArrayList<Task> findTasks(String keyword) {
+        assert keyword != null : "Search keyword should not be null; Parser should have rejected it already";
         return tasks.stream()
                 .filter(task -> task.getDescription().toLowerCase().contains(keyword.toLowerCase()))
                 .collect(Collectors.toCollection(ArrayList::new));

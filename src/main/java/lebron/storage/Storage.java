@@ -78,6 +78,9 @@ public class Storage {
      */
     private Task parseTask(String line) {
         String[] parts = line.split(" \\| ");
+        assert parts.length >= 3
+                : "Every line should have been written by Task#reformat(), so it should have at least "
+                + "type | done-status | description";
         String type = parts[0];
         boolean isDone = parts[1].equals("1");
         String description = parts[2];
@@ -88,9 +91,11 @@ public class Storage {
                 task = new Todo(description);
                 break;
             case "D":
+                assert parts.length >= 4 : "A Deadline line should also carry its due date/time";
                 task = new Deadline(description, LocalDateTime.parse(parts[3]));
                 break;
             case "E":
+                assert parts.length >= 5 : "An Event line should also carry its start and end date/time";
                 task = new Event(description, LocalDateTime.parse(parts[3]),
                         LocalDateTime.parse(parts[4]));
                 break;
