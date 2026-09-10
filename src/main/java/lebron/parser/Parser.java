@@ -112,6 +112,19 @@ public class Parser {
     }
 
     /**
+     * Extracts the text after a command keyword, e.g. extracting "read book" from
+     * "todo read book" given the keyword "todo". Returns an empty String if the
+     * keyword has no text after it.
+     *
+     * @param input Raw user input.
+     * @param keyword The command keyword the input starts with, e.g. "todo".
+     * @return The trimmed text after the keyword and the space following it.
+     */
+    private static String extractArgs(String input, String keyword) {
+        return input.length() > keyword.length() ? input.substring(keyword.length() + 1).trim() : "";
+    }
+
+    /**
      * Extracts and validates the description from a "todo" command.
      *
      * @param input Raw user input, e.g. "todo read book".
@@ -119,7 +132,7 @@ public class Parser {
      * @throws LeBronException if no description was given.
      */
     private static String parseTodoDescription(String input) throws LeBronException {
-        String description = input.length() > 4 ? input.substring(5).trim() : "";
+        String description = extractArgs(input, "todo");
         if (description.isEmpty()) {
             throw new LeBronException("Whatchu tryna to do?");
         }
@@ -134,7 +147,7 @@ public class Parser {
      * @throws LeBronException if no description/date was given, or the "by" keyword is missing.
      */
     private static DeadlineArgs parseDeadlineArgs(String input) throws LeBronException {
-        String fullDesc = input.length() > 8 ? input.substring(9).trim() : "";
+        String fullDesc = extractArgs(input, "deadline");
         if (fullDesc.isEmpty()) {
             throw new LeBronException("Yo specify your deadline!");
         }
@@ -155,7 +168,7 @@ public class Parser {
      * @throws LeBronException if no description/dates were given, or the "from"/"to" keywords are missing.
      */
     private static EventArgs parseEventArgs(String input) throws LeBronException {
-        String fullDesc = input.length() > 5 ? input.substring(6).trim() : "";
+        String fullDesc = extractArgs(input, "event");
         if (fullDesc.isEmpty()) {
             throw new LeBronException("What event you tryna go for? Quit playin!");
         }
@@ -177,7 +190,7 @@ public class Parser {
      * @throws LeBronException if no keyword was given.
      */
     private static String parseFindKeyword(String input) throws LeBronException {
-        String keyword = input.length() > 4 ? input.substring(5).trim() : "";
+        String keyword = extractArgs(input, "find");
         if (keyword.isEmpty()) {
             throw new LeBronException("Whatchu tryna find?");
         }
