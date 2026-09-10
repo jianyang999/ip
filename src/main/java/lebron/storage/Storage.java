@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lebron.task.Deadline;
 import lebron.task.Event;
@@ -56,19 +57,15 @@ public class Storage {
      * @throws IOException if the save file exists but cannot be read.
      */
     public TaskList load() throws IOException {
-        ArrayList<Task> loadedTasks = new ArrayList<>();
-
         if (!Files.exists(filePath)) {
-            return new TaskList(loadedTasks);
+            return new TaskList(new ArrayList<>());
         }
 
         List<String> lines = Files.readAllLines(filePath);
-        for (String line : lines) {
-            if (line.isBlank()) {
-                continue;
-            }
-            loadedTasks.add(parseTask(line));
-        }
+        ArrayList<Task> loadedTasks = lines.stream()
+                .filter(line -> !line.isBlank())
+                .map(this::parseTask)
+                .collect(Collectors.toCollection(ArrayList::new));
         return new TaskList(loadedTasks);
     }
 

@@ -127,11 +127,23 @@ public class TaskListTest {
     }
 
     @Test
+    public void reformat_emptyList_returnsEmptyString() {
+        TaskList taskList = new TaskList(new ArrayList<>());
+        assertEquals("", taskList.reformat());
+    }
+
+    @Test
     public void toString_multipleTasks_numberedFromOne() {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
         taskList.addTask(new Todo("write essay"));
 
         assertEquals("1. [T][ ] read book\n2. [T][ ] write essay\n", taskList.toString());
+    }
+
+    @Test
+    public void toString_emptyList_returnsEmptyString() {
+        TaskList taskList = new TaskList(new ArrayList<>());
+        assertEquals("", taskList.toString());
     }
 }
