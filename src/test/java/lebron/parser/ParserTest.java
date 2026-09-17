@@ -87,7 +87,7 @@ public class ParserTest {
         String response = parseAndExecute("deadline return book by 2019-10-15 1800", taskList);
 
         assertEquals(1, taskList.size());
-        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019)"));
+        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019, 6:00 PM)"));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class ParserTest {
 
         String response = parseAndExecute("deadline  return book   by 2019-10-15 1800", taskList);
 
-        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019)"));
+        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019, 6:00 PM)"));
     }
 
     @Test
@@ -133,7 +133,7 @@ public class ParserTest {
                 "event project meeting from 2019-10-16 0900 to 2019-10-16 1100", taskList);
 
         assertEquals(1, taskList.size());
-        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019 til Oct 16 2019)"));
+        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019, 9:00 AM til Oct 16 2019, 11:00 AM)"));
     }
 
     @Test
@@ -171,7 +171,7 @@ public class ParserTest {
         String response = parseAndExecute(
                 "event  project meeting   from 2019-10-16 0900 to 2019-10-16 1100", taskList);
 
-        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019 til Oct 16 2019)"));
+        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019, 9:00 AM til Oct 16 2019, 11:00 AM)"));
     }
 
     @Test
@@ -265,7 +265,7 @@ public class ParserTest {
         String response = parseAndExecute("recur project meeting every week from 2019-10-15 1800", taskList);
 
         assertEquals(1, taskList.size());
-        assertTrue(response.contains("[R][ ] project meeting (every week, next due: Oct 15 2019)"));
+        assertTrue(response.contains("[R][ ] project meeting (every week, next due: Oct 15 2019, 6:00 PM)"));
     }
 
     @Test
