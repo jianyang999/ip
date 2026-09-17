@@ -2,6 +2,7 @@ package lebron.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +18,7 @@ import lebron.task.Event;
 import lebron.task.RecurrenceInterval;
 import lebron.task.RecurringTask;
 import lebron.task.TaskList;
+import lebron.task.TaskListException;
 import lebron.task.Todo;
 
 public class StorageTest {
@@ -34,7 +36,8 @@ public class StorageTest {
     }
 
     @Test
-    public void saveThenLoad_mixedTaskTypesAndDoneStatuses_roundTripsCorrectly() throws IOException {
+    public void saveThenLoad_mixedTaskTypesAndDoneStatuses_roundTripsCorrectly()
+            throws IOException, TaskListException {
         Storage storage = newStorage();
         TaskList original = new TaskList(new ArrayList<>());
         Todo todo = new Todo("read book");
@@ -51,7 +54,7 @@ public class StorageTest {
     }
 
     @Test
-    public void saveThenLoad_recurringTask_roundTripsCorrectly() throws IOException {
+    public void saveThenLoad_recurringTask_roundTripsCorrectly() throws IOException, TaskListException {
         Storage storage = newStorage();
         TaskList original = new TaskList(new ArrayList<>());
         original.addTask(new RecurringTask("project meeting",
@@ -64,7 +67,7 @@ public class StorageTest {
     }
 
     @Test
-    public void save_parentDirectoryMissing_createsItAutomatically() throws IOException {
+    public void save_parentDirectoryMissing_createsItAutomatically() throws IOException, TaskListException {
         Storage storage = newStorage();
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
@@ -75,12 +78,32 @@ public class StorageTest {
     }
 
     @Test
-    public void load_lineWithUnknownTaskType_illegalArgumentExceptionThrown() throws IOException {
+    public void load_lineWithUnknownTaskType_ioExceptionThrownWithCauseInMessage() throws IOException {
         Path filePath = tempDir.resolve("LeBron.txt");
         Files.writeString(filePath, "X | 0 | mystery task\n");
         Storage storage = new Storage(filePath);
 
-        assertThrows(IllegalArgumentException.class, storage::load);
+        IOException thrown = assertThrows(IOException.class, storage::load);
+
+        assertTrue(thrown.getCause() instanceof IllegalArgumentException);
+    }
+
+    @Test
+    public void load_deadlineLineMissingDateField_ioExceptionThrown() throws IOException {
+        Path filePath = tempDir.resolve("LeBron.txt");
+        Files.writeString(filePath, "D | 0 | return book\n");
+        Storage storage = new Storage(filePath);
+
+        assertThrows(IOException.class, storage::load);
+    }
+
+    @Test
+    public void load_lineWithMalformedDate_ioExceptionThrown() throws IOException {
+        Path filePath = tempDir.resolve("LeBron.txt");
+        Files.writeString(filePath, "D | 0 | return book | not-a-date\n");
+        Storage storage = new Storage(filePath);
+
+        assertThrows(IOException.class, storage::load);
     }
 
     @Test

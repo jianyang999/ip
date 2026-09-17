@@ -1,5 +1,7 @@
 package lebron.task;
 
+import java.util.Objects;
+
 /**
  * Represents a Task.
  */
@@ -49,5 +51,31 @@ public class Task {
     @Override
     public String toString() {
         return this.isDone ? "[X] " + this.description : "[ ] " + this.description;
+    }
+
+    /**
+     * Two Tasks are equal if they are the exact same concrete type and have the same
+     * description. Subclasses with extra fields (e.g. dates) should also compare those,
+     * by combining this check with their own via {@code super.equals(obj)}. This is used
+     * by TaskList to reject adding a task that duplicates one already in the list.
+     *
+     * @param obj The object to compare against.
+     * @return true if obj is a Task of the same concrete type with the same description.
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Task other = (Task) obj;
+        return description.equals(other.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getClass(), description);
     }
 }

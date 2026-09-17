@@ -30,7 +30,7 @@ public class UnmarkCommandTest {
     }
 
     @Test
-    public void execute_taskNumberOutOfRange_exceptionThrown() {
+    public void execute_taskNumberOutOfRange_exceptionThrown() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
         Command command = new UnmarkCommand(0);

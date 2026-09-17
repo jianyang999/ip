@@ -1,5 +1,6 @@
 package lebron.command;
 
+import lebron.exception.LeBronException;
 import lebron.task.Task;
 import lebron.task.TaskList;
 import lebron.task.Todo;
@@ -21,7 +22,7 @@ public class TodoCommand implements Command {
     }
 
     @Override
-    public String execute(TaskList taskList, Ui ui) {
+    public String execute(TaskList taskList, Ui ui) throws LeBronException {
         Task task = new Todo(description);
         taskList.addTask(task);
         return ui.showTodoAdded(task, taskList.size());

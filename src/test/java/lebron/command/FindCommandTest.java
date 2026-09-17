@@ -8,13 +8,14 @@ import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
 
+import lebron.exception.LeBronException;
 import lebron.task.TaskList;
 import lebron.task.Todo;
 import lebron.ui.Ui;
 
 public class FindCommandTest {
     @Test
-    public void execute_matchingKeyword_reportsMatchingTasksToUi() {
+    public void execute_matchingKeyword_reportsMatchingTasksToUi() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
         taskList.addTask(new Todo("write essay"));
@@ -26,7 +27,7 @@ public class FindCommandTest {
     }
 
     @Test
-    public void execute_noMatch_reportsEmptyListToUi() {
+    public void execute_noMatch_reportsEmptyListToUi() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
 

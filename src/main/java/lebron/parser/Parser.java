@@ -2,6 +2,7 @@ package lebron.parser;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
 
 import lebron.command.ByeCommand;
 import lebron.command.Command;
@@ -21,7 +22,12 @@ import lebron.task.RecurrenceInterval;
  * Deals with making sense of raw user input, turning it into an executable Command.
  */
 public class Parser {
-    private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+    // "uuuu" (not "yyyy") is required for ResolverStyle.STRICT to work with LocalDateTime;
+    // STRICT rejects non-existent dates like Feb 30 instead of silently rolling them over
+    // to Feb 28, which the default (SMART) resolver style does.
+    private static final DateTimeFormatter INPUT_DATE_FORMAT = DateTimeFormatter
+            .ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     private Parser() {
     }
@@ -52,7 +58,8 @@ public class Parser {
      * @throws LeBronException if the input is not a recognised, well-formed command.
      */
     public static Command parse(String input) throws LeBronException {
-        CommandType commandType = getCommandType(input);
+        String trimmedInput = input.trim();
+        CommandType commandType = getCommandType(trimmedInput);
         switch (commandType) {
             case BYE -> {
                 return new ByeCommand();
@@ -61,30 +68,30 @@ public class Parser {
                 return new ListCommand();
             }
             case TODO -> {
-                return new TodoCommand(parseTodoDescription(input));
+                return new TodoCommand(parseTodoDescription(trimmedInput));
             }
             case DEADLINE -> {
-                DeadlineArgs args = parseDeadlineArgs(input);
+                DeadlineArgs args = parseDeadlineArgs(trimmedInput);
                 return new DeadlineCommand(args.description(), args.by());
             }
             case EVENT -> {
-                EventArgs args = parseEventArgs(input);
+                EventArgs args = parseEventArgs(trimmedInput);
                 return new EventCommand(args.description(), args.start(), args.end());
             }
             case MARK -> {
-                return new MarkCommand(parseTaskNumber(input));
+                return new MarkCommand(parseTaskNumber(trimmedInput));
             }
             case UNMARK -> {
-                return new UnmarkCommand(parseTaskNumber(input));
+                return new UnmarkCommand(parseTaskNumber(trimmedInput));
             }
             case DELETE -> {
-                return new DeleteCommand(parseTaskNumber(input));
+                return new DeleteCommand(parseTaskNumber(trimmedInput));
             }
             case FIND -> {
-                return new FindCommand(parseFindKeyword(input));
+                return new FindCommand(parseFindKeyword(trimmedInput));
             }
             case RECUR -> {
-                RecurringArgs args = parseRecurringArgs(input);
+                RecurringArgs args = parseRecurringArgs(trimmedInput);
                 return new RecurringCommand(args.description(), args.nextDue(), args.interval());
             }
             default -> throw new LeBronException("Whatchu tryna do youngblood?");
@@ -158,7 +165,8 @@ public class Parser {
      *
      * @param input Raw user input, e.g. "deadline return book by 2019-10-15 1800".
      * @return The parsed description and due date/time.
-     * @throws LeBronException if no description/date was given, or the "by" keyword is missing.
+     * @throws LeBronException if no description/date was given, the "by" keyword is missing,
+     *         or "by" appears more than once.
      */
     private static DeadlineArgs parseDeadlineArgs(String input) throws LeBronException {
         String fullDesc = extractArgs(input, "deadline");
@@ -169,7 +177,10 @@ public class Parser {
             throw new LeBronException("Stop playin with me!");
         }
         String[] parts = fullDesc.split(" by ");
-        String description = parts[0];
+        if (parts.length != 2) {
+            throw new LeBronException("Only one 'by' per deadline, don't confuse me!");
+        }
+        String description = parts[0].trim();
         LocalDateTime by = LocalDateTime.parse(parts[1].trim(), INPUT_DATE_FORMAT);
         return new DeadlineArgs(description, by);
     }
@@ -179,7 +190,8 @@ public class Parser {
      *
      * @param input Raw user input, e.g. "event project meeting from 2019-10-16 0900 to 2019-10-16 1100".
      * @return The parsed description and start/end date/time.
-     * @throws LeBronException if no description/dates were given, or the "from"/"to" keywords are missing.
+     * @throws LeBronException if no description/dates were given, the "from"/"to" keywords
+     *         are missing or repeated, or the end date/time is not after the start date/time.
      */
     private static EventArgs parseEventArgs(String input) throws LeBronException {
         String fullDesc = extractArgs(input, "event");
@@ -190,9 +202,15 @@ public class Parser {
             throw new LeBronException("Tell me start and end!");
         }
         String[] parts = fullDesc.split(" from | to ");
-        String description = parts[0];
+        if (parts.length != 3) {
+            throw new LeBronException("One 'from' and one 'to', don't confuse me!");
+        }
+        String description = parts[0].trim();
         LocalDateTime start = LocalDateTime.parse(parts[1].trim(), INPUT_DATE_FORMAT);
         LocalDateTime end = LocalDateTime.parse(parts[2].trim(), INPUT_DATE_FORMAT);
+        if (!end.isAfter(start)) {
+            throw new LeBronException("Your event can't end before it even starts!");
+        }
         return new EventArgs(description, start, end);
     }
 
@@ -218,7 +236,8 @@ public class Parser {
      * @param input Raw user input, e.g. "recur project meeting every week from 2019-10-15 1800".
      * @return The parsed description, next due date/time, and interval.
      * @throws LeBronException if no description/interval/date was given, the "every"/"from"
-     *         keywords are missing, or the interval is not "day", "week", or "month".
+     *         keywords are missing or "from" is repeated, or the interval is not "day",
+     *         "week", or "month".
      */
     private static RecurringArgs parseRecurringArgs(String input) throws LeBronException {
         String fullDesc = extractArgs(input, "recur");
@@ -229,20 +248,34 @@ public class Parser {
             throw new LeBronException("Tell me how often and when it starts!");
         }
         String[] descAndRest = fullDesc.split(" every ", 2);
-        String description = descAndRest[0];
+        String description = descAndRest[0].trim();
         String[] intervalAndDate = descAndRest[1].split(" from ");
+        if (intervalAndDate.length != 2) {
+            throw new LeBronException("Only one 'from', don't confuse me!");
+        }
         RecurrenceInterval interval = RecurrenceInterval.fromKeyword(intervalAndDate[0].trim());
         LocalDateTime nextDue = LocalDateTime.parse(intervalAndDate[1].trim(), INPUT_DATE_FORMAT);
         return new RecurringArgs(description, nextDue, interval);
     }
 
     /**
-     * Extracts the task number from a "mark"/"unmark"/"delete" command.
+     * Extracts and validates the task number from a "mark"/"unmark"/"delete" command.
+     * Tolerant of repeated spaces between the command word and the number.
      *
      * @param input Raw user input, e.g. "mark 2".
      * @return The 1-based task number.
+     * @throws LeBronException if no task number was given, more than one was given,
+     *         or it is not a whole number.
      */
-    private static int parseTaskNumber(String input) {
-        return Integer.parseInt((input.split(" "))[1]);
+    private static int parseTaskNumber(String input) throws LeBronException {
+        String[] tokens = input.split("\\s+");
+        if (tokens.length != 2) {
+            throw new LeBronException("Gimme exactly one task number, nothing more nothing less!");
+        }
+        try {
+            return Integer.parseInt(tokens[1]);
+        } catch (NumberFormatException e) {
+            throw new LeBronException("That's not a task number I recognize!");
+        }
     }
 }

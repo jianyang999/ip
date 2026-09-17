@@ -62,6 +62,25 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_inputWithLeadingAndTrailingWhitespace_stillParsedCorrectly() throws LeBronException {
+        TaskList taskList = new TaskList(new ArrayList<>());
+
+        String response = parseAndExecute("   todo read book   ", taskList);
+
+        assertEquals(1, taskList.size());
+        assertTrue(response.contains("[T][ ] read book"));
+    }
+
+    @Test
+    public void parse_duplicateTodo_exceptionThrownAndListUnchanged() throws LeBronException {
+        TaskList taskList = new TaskList(new ArrayList<>());
+        parseAndExecute("todo read book", taskList);
+
+        assertThrows(LeBronException.class, () -> parseAndExecute("todo read book", taskList));
+        assertEquals(1, taskList.size());
+    }
+
+    @Test
     public void parse_deadlineValid_addsDeadlineWithCorrectDescriptionAndDate() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
 
@@ -87,6 +106,26 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_deadlineNonExistentDate_dateTimeParseExceptionThrown() {
+        assertThrows(DateTimeParseException.class, () -> Parser.parse("deadline return book by 2019-02-30 1800"));
+    }
+
+    @Test
+    public void parse_deadlineDuplicateByKeyword_exceptionThrown() {
+        assertThrows(LeBronException.class, () ->
+                Parser.parse("deadline return book by 2019-10-15 1800 by 2019-10-20 1800"));
+    }
+
+    @Test
+    public void parse_deadlineDescriptionWithSurroundingWhitespace_trimmedCorrectly() throws LeBronException {
+        TaskList taskList = new TaskList(new ArrayList<>());
+
+        String response = parseAndExecute("deadline  return book   by 2019-10-15 1800", taskList);
+
+        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019)"));
+    }
+
+    @Test
     public void parse_eventValid_addsEventWithCorrectDescriptionAndDates() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
 
@@ -108,6 +147,34 @@ public class ParserTest {
     }
 
     @Test
+    public void parse_eventEndBeforeStart_exceptionThrown() {
+        assertThrows(LeBronException.class, () ->
+                Parser.parse("event project meeting from 2019-10-16 1100 to 2019-10-16 0900"));
+    }
+
+    @Test
+    public void parse_eventEndEqualsStart_exceptionThrown() {
+        assertThrows(LeBronException.class, () ->
+                Parser.parse("event project meeting from 2019-10-16 0900 to 2019-10-16 0900"));
+    }
+
+    @Test
+    public void parse_eventDuplicateFromKeyword_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse(
+                "event project meeting from 2019-10-16 0900 from 2019-10-16 1000 to 2019-10-16 1100"));
+    }
+
+    @Test
+    public void parse_eventDescriptionWithSurroundingWhitespace_trimmedCorrectly() throws LeBronException {
+        TaskList taskList = new TaskList(new ArrayList<>());
+
+        String response = parseAndExecute(
+                "event  project meeting   from 2019-10-16 0900 to 2019-10-16 1100", taskList);
+
+        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019 til Oct 16 2019)"));
+    }
+
+    @Test
     public void parse_markValid_marksCorrectTask() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
@@ -115,6 +182,31 @@ public class ParserTest {
         String response = parseAndExecute("mark 1", taskList);
 
         assertTrue(response.contains("[T][X] read book"));
+    }
+
+    @Test
+    public void parse_markWithExtraSpacesBetweenWordAndNumber_stillParsedCorrectly() throws LeBronException {
+        TaskList taskList = new TaskList(new ArrayList<>());
+        taskList.addTask(new Todo("read book"));
+
+        String response = parseAndExecute("mark   1", taskList);
+
+        assertTrue(response.contains("[T][X] read book"));
+    }
+
+    @Test
+    public void parse_markMissingTaskNumber_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse("mark"));
+    }
+
+    @Test
+    public void parse_markTooManyTaskNumbers_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse("mark 1 2"));
+    }
+
+    @Test
+    public void parse_markNonNumericTaskNumber_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse("mark abc"));
     }
 
     @Test
@@ -196,5 +288,11 @@ public class ParserTest {
     public void parse_recurMalformedDate_dateTimeParseExceptionThrown() {
         assertThrows(DateTimeParseException.class, () ->
                 Parser.parse("recur project meeting every week from not-a-date"));
+    }
+
+    @Test
+    public void parse_recurDuplicateFromKeyword_exceptionThrown() {
+        assertThrows(LeBronException.class, () -> Parser.parse(
+                "recur project meeting every week from 2019-10-15 1800 from 2019-10-16 1800"));
     }
 }

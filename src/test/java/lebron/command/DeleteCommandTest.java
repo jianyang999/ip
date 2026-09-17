@@ -29,7 +29,7 @@ public class DeleteCommandTest {
     }
 
     @Test
-    public void execute_taskNumberOutOfRange_exceptionThrownAndListUnchanged() {
+    public void execute_taskNumberOutOfRange_exceptionThrownAndListUnchanged() throws LeBronException {
         TaskList taskList = new TaskList(new ArrayList<>());
         taskList.addTask(new Todo("read book"));
         Command command = new DeleteCommand(5);

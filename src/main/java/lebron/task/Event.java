@@ -2,6 +2,7 @@ package lebron.task;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * Represents an Event, a Task that occurs over a start and end date/time.
@@ -35,5 +36,19 @@ public class Event extends Task {
     public String toString() {
         return "[E]" + super.toString() + " (from " + this.start.format(DISPLAY_DATE_FORMAT)
                 + " til " + this.end.format(DISPLAY_DATE_FORMAT) + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        Event other = (Event) obj;
+        return start.equals(other.start) && end.equals(other.end);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), start, end);
     }
 }

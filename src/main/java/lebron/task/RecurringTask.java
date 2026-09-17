@@ -2,6 +2,7 @@ package lebron.task;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * Represents a RecurringTask, a Task that repeats at a fixed interval (e.g. a weekly
@@ -50,5 +51,19 @@ public class RecurringTask extends Task {
     public String toString() {
         return "[R]" + super.toString() + " (every " + this.interval
                 + ", next due: " + this.nextDue.format(DISPLAY_DATE_FORMAT) + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        RecurringTask other = (RecurringTask) obj;
+        return nextDue.equals(other.nextDue) && interval == other.interval;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), nextDue, interval);
     }
 }
