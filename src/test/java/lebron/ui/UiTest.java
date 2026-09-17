@@ -44,9 +44,8 @@ public class UiTest {
     @Test
     public void showDeadlineAdded_includesHeaderTaskAndCount() {
         Task task = new Deadline("return book", LocalDateTime.of(2019, 10, 15, 18, 0));
-        String expected = "Don't put these off!\n[D][ ] return book (by: Oct 15 2019, 6:00 PM)\n"
-                + "1 tasks left to grind now!";
-        assertEquals(expected, ui.showDeadlineAdded(task, 1));
+        assertEquals("Don't put these off!\n[D][ ] return book (by: Oct 15 2019)\n1 tasks left to grind now!",
+                ui.showDeadlineAdded(task, 1));
     }
 
     @Test

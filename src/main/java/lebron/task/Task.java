@@ -1,23 +1,11 @@
 package lebron.task;
 
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
 import java.util.Objects;
 
 /**
  * Represents a Task.
  */
 public class Task {
-    /**
-     * Display format shared by every Task subtype that carries a date/time
-     * (Deadline/Event/RecurringTask), so their toString() output includes the time
-     * the user gave, not just the date. Locale.ENGLISH is fixed explicitly so the
-     * output (e.g. "AM"/"PM") looks the same regardless of the machine's default
-     * locale, rather than silently varying between environments.
-     */
-    protected static final DateTimeFormatter DISPLAY_DATE_TIME_FORMAT =
-            DateTimeFormatter.ofPattern("MMM d yyyy, h:mm a", Locale.ENGLISH);
-
     private String description;
     private boolean isDone;
 

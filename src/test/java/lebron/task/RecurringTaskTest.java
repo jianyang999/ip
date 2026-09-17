@@ -25,7 +25,7 @@ public class RecurringTaskTest {
     @Test
     public void toString_newTask_showsNextDueDateAndInterval() {
         RecurringTask task = new RecurringTask("project meeting", firstDue, RecurrenceInterval.WEEKLY);
-        assertEquals("[R][ ] project meeting (every week, next due: Oct 15 2019, 6:00 PM)", task.toString());
+        assertEquals("[R][ ] project meeting (every week, next due: Oct 15 2019)", task.toString());
     }
 
     @Test
@@ -34,7 +34,7 @@ public class RecurringTaskTest {
 
         task.setStatus(true);
 
-        assertEquals("[R][ ] project meeting (every week, next due: Oct 22 2019, 6:00 PM)", task.toString());
+        assertEquals("[R][ ] project meeting (every week, next due: Oct 22 2019)", task.toString());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class RecurringTaskTest {
 
         task.setStatus(false);
 
-        assertEquals("[R][ ] project meeting (every day, next due: Oct 15 2019, 6:00 PM)", task.toString());
+        assertEquals("[R][ ] project meeting (every day, next due: Oct 15 2019)", task.toString());
     }
 
     @Test

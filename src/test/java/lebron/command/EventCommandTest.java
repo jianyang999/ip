@@ -23,7 +23,7 @@ public class EventCommandTest {
         String response = command.execute(taskList, new Ui());
 
         assertEquals(1, taskList.size());
-        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019, 9:00 AM til Oct 16 2019, 11:00 AM)"));
+        assertTrue(response.contains("[E][ ] project meeting (from Oct 16 2019 til Oct 16 2019)"));
         assertTrue(response.contains("1 tasks left to grind now!"));
     }
 

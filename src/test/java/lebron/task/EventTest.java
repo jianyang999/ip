@@ -25,14 +25,14 @@ public class EventTest {
     @Test
     public void toString_notDone_correctFormatWithHumanReadableDates() {
         Event event = new Event("project meeting", start, end);
-        assertEquals("[E][ ] project meeting (from Oct 16 2019, 9:00 AM til Oct 16 2019, 11:00 AM)", event.toString());
+        assertEquals("[E][ ] project meeting (from Oct 16 2019 til Oct 16 2019)", event.toString());
     }
 
     @Test
     public void toString_done_correctFormat() {
         Event event = new Event("project meeting", start, end);
         event.setStatus(true);
-        assertEquals("[E][X] project meeting (from Oct 16 2019, 9:00 AM til Oct 16 2019, 11:00 AM)", event.toString());
+        assertEquals("[E][X] project meeting (from Oct 16 2019 til Oct 16 2019)", event.toString());
     }
 
     @Test
