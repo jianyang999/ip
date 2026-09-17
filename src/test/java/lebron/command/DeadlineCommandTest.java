@@ -22,7 +22,7 @@ public class DeadlineCommandTest {
         String response = command.execute(taskList, new Ui());
 
         assertEquals(1, taskList.size());
-        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019)"));
+        assertTrue(response.contains("[D][ ] return book (by: Oct 15 2019, 6:00 PM)"));
         assertTrue(response.contains("1 tasks left to grind now!"));
     }
 

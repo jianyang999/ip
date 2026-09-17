@@ -1,7 +1,6 @@
 package lebron.task;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 /**
@@ -10,8 +9,6 @@ import java.util.Objects;
  * instead advances it to its next occurrence, so it keeps reappearing in the list.
  */
 public class RecurringTask extends Task {
-    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("MMM d yyyy");
-
     private LocalDateTime nextDue;
     private final RecurrenceInterval interval;
 
@@ -50,7 +47,7 @@ public class RecurringTask extends Task {
     @Override
     public String toString() {
         return "[R]" + super.toString() + " (every " + this.interval
-                + ", next due: " + this.nextDue.format(DISPLAY_DATE_FORMAT) + ")";
+                + ", next due: " + this.nextDue.format(DISPLAY_DATE_TIME_FORMAT) + ")";
     }
 
     @Override

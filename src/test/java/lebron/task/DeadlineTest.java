@@ -29,14 +29,14 @@ public class DeadlineTest {
     @Test
     public void toString_notDone_correctFormatWithHumanReadableDate() {
         Deadline deadline = new Deadline("return book", by);
-        assertEquals("[D][ ] return book (by: Oct 15 2019)", deadline.toString());
+        assertEquals("[D][ ] return book (by: Oct 15 2019, 6:00 PM)", deadline.toString());
     }
 
     @Test
     public void toString_done_correctFormat() {
         Deadline deadline = new Deadline("return book", by);
         deadline.setStatus(true);
-        assertEquals("[D][X] return book (by: Oct 15 2019)", deadline.toString());
+        assertEquals("[D][X] return book (by: Oct 15 2019, 6:00 PM)", deadline.toString());
     }
 
     @Test
