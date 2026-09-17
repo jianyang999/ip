@@ -1,6 +1,7 @@
 package lebron.task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.time.LocalDateTime;
 
@@ -8,6 +9,18 @@ import org.junit.jupiter.api.Test;
 
 public class RecurringTaskTest {
     private final LocalDateTime firstDue = LocalDateTime.of(2019, 10, 15, 18, 0);
+
+    @Test
+    public void equals_sameDescriptionDateAndInterval_returnsTrue() {
+        assertEquals(new RecurringTask("project meeting", firstDue, RecurrenceInterval.WEEKLY),
+                new RecurringTask("project meeting", firstDue, RecurrenceInterval.WEEKLY));
+    }
+
+    @Test
+    public void equals_differentInterval_returnsFalse() {
+        RecurringTask other = new RecurringTask("project meeting", firstDue, RecurrenceInterval.DAILY);
+        assertNotEquals(new RecurringTask("project meeting", firstDue, RecurrenceInterval.WEEKLY), other);
+    }
 
     @Test
     public void toString_newTask_showsNextDueDateAndInterval() {
