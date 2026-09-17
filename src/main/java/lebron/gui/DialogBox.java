@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 
 /**
  * A dialog box consisting of a Label containing text and an ImageView representing
@@ -35,17 +36,22 @@ public class DialogBox extends HBox {
 
         dialog.setText(text);
         displayPicture.setImage(img);
+        displayPicture.setClip(new Circle(
+                displayPicture.getFitWidth() / 2, displayPicture.getFitHeight() / 2,
+                Math.min(displayPicture.getFitWidth(), displayPicture.getFitHeight()) / 2));
     }
 
     /**
      * Flips this dialog box so the ImageView is on the left and the Label on the right,
-     * used to visually distinguish LeBron's replies from the user's messages.
+     * and gives the Label LeBron's reply styling, used to visually distinguish LeBron's
+     * replies from the user's messages.
      */
     private void flip() {
         setAlignment(Pos.TOP_LEFT);
         ObservableList<Node> tmp = FXCollections.observableArrayList(getChildren());
         FXCollections.reverse(tmp);
         getChildren().setAll(tmp);
+        dialog.getStyleClass().add("reply-label");
     }
 
     /**
