@@ -30,8 +30,19 @@ public class LeBron {
      * If no save file exists or it cannot be loaded, starts with an empty TaskList.
      */
     public LeBron() {
+        this(new Storage());
+    }
+
+    /**
+     * Constructs a LeBron instance using the given Storage, loading any previously saved
+     * TaskList from it. Package-private; lets tests use a temporary Storage instead of
+     * the real save file.
+     *
+     * @param storage The Storage to load from and save to.
+     */
+    LeBron(Storage storage) {
         ui = new Ui();
-        storage = new Storage();
+        this.storage = storage;
         try {
             taskList = storage.load();
         } catch (IOException e) {
@@ -73,8 +84,6 @@ public class LeBron {
             return isExit ? response : response + saveAndGetErrorSuffix();
         } catch (LeBronException e) {
             return ui.showMessage(e.getMessage());
-        } catch (NumberFormatException | IndexOutOfBoundsException e) {
-            return ui.showMessage("This task don't exist, don't play with me!");
         } catch (DateTimeParseException e) {
             return ui.showMessage(
                     "That date don't look right, use yyyy-MM-dd HHmm man, e.g. 2019-10-15 1800.");
