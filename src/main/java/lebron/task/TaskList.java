@@ -23,8 +23,13 @@ public class TaskList {
      * Adds a task to the TaskList.
      *
      * @param task The task to be added.
+     * @throws TaskListException if an equal task (same type, description, and dates) is
+     *         already in the list.
      */
-    public void addTask(Task task) {
+    public void addTask(Task task) throws TaskListException {
+        if (tasks.contains(task)) {
+            throw new TaskListException("You already got that one on your list!");
+        }
         this.tasks.add(task);
     }
 

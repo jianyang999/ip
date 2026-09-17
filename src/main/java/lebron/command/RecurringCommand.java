@@ -2,6 +2,7 @@ package lebron.command;
 
 import java.time.LocalDateTime;
 
+import lebron.exception.LeBronException;
 import lebron.task.RecurrenceInterval;
 import lebron.task.RecurringTask;
 import lebron.task.Task;
@@ -30,7 +31,7 @@ public class RecurringCommand implements Command {
     }
 
     @Override
-    public String execute(TaskList taskList, Ui ui) {
+    public String execute(TaskList taskList, Ui ui) throws LeBronException {
         Task task = new RecurringTask(description, nextDue, interval);
         taskList.addTask(task);
         return ui.showRecurringAdded(task, taskList.size());

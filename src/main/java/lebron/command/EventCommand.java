@@ -2,6 +2,7 @@ package lebron.command;
 
 import java.time.LocalDateTime;
 
+import lebron.exception.LeBronException;
 import lebron.task.Event;
 import lebron.task.Task;
 import lebron.task.TaskList;
@@ -29,7 +30,7 @@ public class EventCommand implements Command {
     }
 
     @Override
-    public String execute(TaskList taskList, Ui ui) {
+    public String execute(TaskList taskList, Ui ui) throws LeBronException {
         Task task = new Event(description, start, end);
         taskList.addTask(task);
         return ui.showEventAdded(task, taskList.size());

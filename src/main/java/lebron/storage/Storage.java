@@ -56,7 +56,8 @@ public class Storage {
      * an empty TaskList is returned.
      *
      * @return The loaded TaskList.
-     * @throws IOException if the save file exists but cannot be read.
+     * @throws IOException if the save file exists but cannot be read, or its content is
+     *         corrupted/unrecognisable (e.g. hand-edited into an invalid state).
      */
     public TaskList load() throws IOException {
         if (!Files.exists(filePath)) {
@@ -64,11 +65,23 @@ public class Storage {
         }
 
         List<String> lines = Files.readAllLines(filePath);
-        ArrayList<Task> loadedTasks = lines.stream()
-                .filter(line -> !line.isBlank())
-                .map(this::parseTask)
-                .collect(Collectors.toCollection(ArrayList::new));
-        return new TaskList(loadedTasks);
+        try {
+            ArrayList<Task> loadedTasks = lines.stream()
+                    .filter(line -> !line.isBlank())
+                    .map(this::parseTask)
+                    .collect(Collectors.toCollection(ArrayList::new));
+            return new TaskList(loadedTasks);
+        } catch (RuntimeException | AssertionError e) {
+            // parseTask only throws unchecked exceptions (IllegalArgumentException for an
+            // unknown type, DateTimeParseException for a bad date, ArrayIndexOutOfBoundsException
+            // for a line missing fields, or AssertionError from its own assertions when
+            // assertions are enabled, e.g. under `gradlew test`). Translating them into
+            // IOException here means the caller (LeBron's constructor) only needs its
+            // existing IOException handling to
+            // fall back to an empty TaskList, instead of a corrupted save file crashing the
+            // whole app at startup.
+            throw new IOException("Save file is corrupted: " + e.getMessage(), e);
+        }
     }
 
     /**

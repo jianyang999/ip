@@ -2,6 +2,7 @@ package lebron.task;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * Represents a Deadline, a Task that must be completed by a specific date/time.
@@ -31,5 +32,19 @@ public class Deadline extends Task {
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: " + this.deadline.format(DISPLAY_DATE_FORMAT) + ")";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!super.equals(obj)) {
+            return false;
+        }
+        Deadline other = (Deadline) obj;
+        return deadline.equals(other.deadline);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), deadline);
     }
 }
